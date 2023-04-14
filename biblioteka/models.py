@@ -1,4 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import User
+
+
+from datetime import datetime, timedelta
+
 
 # Create your models here.
 
@@ -38,4 +43,47 @@ class Publisher(models.Model):
         return self.name
     
 
-#check
+class AvailableBook(models.Model):
+    STATUS_CHOICES = (
+        (0, 'False'),
+        (1, 'True'),
+    )
+
+    book = models.ForeignKey(Books, on_delete=models.CASCADE)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    
+
+
+class Borrower(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    debt = models.IntegerField(default=0)
+
+    def __str__(self) -> str:
+        return self.user
+    
+
+def expiry():
+    return datetime.today() + timedelta(days=14)
+
+class Borrow(models.Model):
+    STATUS_CHOICES = (
+        (0, 'False'),
+        (1, 'True'),
+    )
+
+    borrower = models.ForeignKey(Borrower, on_delete=models.CASCADE)
+    borrowed_book = models.ForeignKey(AvailableBook, on_delete=models.CASCADE)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    issued_date = models.DateField(auto_now=True)
+    expiry_date = models.DateField(default=expiry)
+
+    def __str__(self) -> str:
+        return f'{self.borrower} - {self.borrowed_book}'
+    
+    def debt(self):
+        debt = (datetime.today - self.expiry_date).days
+        
+        if self.status and debt > 0:
+            self.borrower.debt = debt
+            self.borrower.save()
+        
