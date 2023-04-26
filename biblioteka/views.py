@@ -7,7 +7,7 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
-from .forms import MyUserCreationForm
+from .Forms import MyUserCreationForm
 
 from django.db.models import Count
 from django.db.models import Q
@@ -31,9 +31,10 @@ class MyLogoutView(LogoutView):
 
 # Book's views 
 
+
 class BooksListView(ListView):
     model = Books
-    template = 'home.html'
+    template_name = 'home.html'
     context_object_name = 'books'
     paginate_by = 1
 
