@@ -1,3 +1,7 @@
+from .models import Books, AvailableBook, Borrow, Borrower
+from django.db.models import Count
+from django.core.mail import send_mail
+from django.utils import timezone
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView, LogoutView
@@ -5,42 +9,47 @@ from django.urls import reverse_lazy, reverse
 from django.contrib.auth.models import User
 from .forms import MyUserCreationForm
 
-from .models import Books, AvailableBook, Borrower, Borrow
 from django.db.models import Count
-from django.core.mail import send_mail
+from django.db.models import Q
 
-from django.utils import timezone
 
+
+# Login 
 
 class MyLoginView(LoginView):
     redirect_authenticated_user = True
-    template_name = 'login.html'
+    template = 'login.html'
 
     def get_success_url(self):
         return reverse_lazy('home')
 
-
 class MyLogoutView(LogoutView):
     redirect_field_name = True
 
+# Login end
+
+
+# Book's views 
 
 class BooksListView(ListView):
     model = Books
-    template_name = 'home.html'
+    template = 'home.html'
     context_object_name = 'books'
+    paginate_by = 1
 
     def get_queryset(self):
+        search = self.request.GET.get('search', '')
+        queryset = super().get_queryset().filter(
+            Q(title__icontains=search) |
+            Q(author__name__icontains=search)
+        )
 
-        # print_hello()
-        queryset = super().get_queryset()
-        queryset = queryset.annotate(instance_count=Count('exemplar'))
         return queryset
 
 
-# Class based views
 class BookDetailView(DetailView):
     model = Books
-    template_name = 'crud/book-detail.html'
+    template = 'book/book-detail.html'
 
     def get_context_data(self, **kwargs):
         context = super(BookDetailView, self).get_context_data(**kwargs)
@@ -51,14 +60,14 @@ class BookDetailView(DetailView):
 
 class BookCreateView(CreateView):
     model = Books
-    template_name = 'crud/create.html'
+    template = 'form.html'
     fields = '__all__'
     success_url = reverse_lazy('home')
 
 
 class BookUpdateView(UpdateView):
     model = Books
-    template_name = 'crud/create.html'
+    template = 'form.html'
     fields = '__all__'
 
     def get_success_url(self):
@@ -68,14 +77,84 @@ class BookUpdateView(UpdateView):
 
 class BookDeleteView(DeleteView):
     model = Books
-    template_name = 'crud/confirm-delete.html'
+    template = 'delete.html'
     success_url = reverse_lazy('home')
 
+# Book's views end
 
-class CreateUserView(CreateView):
+# Borrow views
+
+class BorrowCreateView(CreateView):
+    model = Borrow
+    fields = ['borrower']
+    success_url = reverse_lazy('home')
+    template_name = 'form.html'
+
+    def form_valid(self, form):
+        LastBorrow = Borrow.objects.filter(borrower=form.instance.borrower).last()
+
+        if form.instance.borrower.debt:
+            form.add_error('borrower', 'Fine isn\'t paid')
+
+            return self.form_invalid(form)
+
+        if LastBorrow is not None and timezone.now() < LastBorrow.end:
+            form.add_error('borrower', 'You allready borrowed a book')
+
+            return self.form_invalid(form)
+
+        availableB = AvailableBook.objects.get(id=self.kwargs['avalaibleB'])
+        availableB.status = 0
+        availableB.save()
+
+        form.instance.availableB = availableB
+
+        response = super().form_valid(form)
+        return response
+
+    def get_success_url(self):
+        return reverse_lazy('AvailableBook_detail', kwargs={'pk': self.object.availableB.id})
+    
+    # Borrow views end
+
+    # Borrower views
+
+class BorrowerListView(ListView):
+    model = Borrower
+    template_name = 'borrower_list.html'
+    context_object_name = 'users'
+    ordering = 'id'
+
+    def get_queryset(self):
+        search = self.request.GET.get('search', '')
+        print(search)
+
+
+        queryset = super().get_queryset().filter(
+            Q(user__first_name__icontains=search)
+        )
+
+        for borrow in Borrow.objects.filter(status=1):
+            borrow.calculate_fine()
+
+        return queryset
+
+
+class BorrowerDetailView(DetailView):
+    model = Borrower
+    template_name = 'borrower_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['availableB'] = self.object.has_availableB()
+
+        return context
+
+
+class BorrowerCreateView(CreateView):
     model = User
     form_class = MyUserCreationForm
-    template_name = 'crud/create.html'
+    template_name = 'form.html'
     success_url = reverse_lazy('home')
 
     def form_valid(self, form):
@@ -89,9 +168,9 @@ class CreateUserView(CreateView):
         borrower.save()
 
         send_mail(
-            'Creating an account in Library application',
+            'Account has been created',
             f'Your passwords for {user.username} account: {password}',
-            'noreply@tenirbook.com',
+            'ДОБАВИТЬ ИМЕЙЛ',
             [user.email],
         )
 
@@ -99,24 +178,24 @@ class CreateUserView(CreateView):
         return response
 
 
-class UserListView(ListView):
+class BorrowerUpdateView(UpdateView):
     model = Borrower
-    template_name = 'user-list.html'
-    context_object_name = 'users'
-    ordering = 'id'
+    form_class = MyUserCreationForm
+    template_name = 'form.html'
 
-    def get_queryset(self):
-        users = Borrower.objects.all()
+    def get_object(self, queryset=None):
+        return self.request.user
 
-        for borrow in Borrow.objects.filter(status=1):
-            borrow.calculate_fine()
+    def get_success_url(self):
+        return reverse_lazy('borrower_detail', kwargs={'pk': self.object.borrower.id})
+    
+# Borrower views end
 
-        return users
+# AvailableBooks views 
 
-
-class BookExemplarListView(ListView):
-    template_name = 'instance-list.html'
-    context_object_name = 'exemplars'
+class AvailableBookListView(ListView):
+    template_name = 'AvailableBook_list.html'
+    context_object_name = 'AvailableBooks'
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -125,54 +204,34 @@ class BookExemplarListView(ListView):
         return context
 
     def get_queryset(self):
-        exemplars = AvailableBook.objects.filter(book=self.kwargs['book'])
+        AvailableBooks = AvailableBook.objects.filter(book=self.kwargs['book'])
 
-        for exemplar in exemplars:
-            # print(exemplar)
-            borrows = Borrow.objects.filter(exemplar=exemplar)
-            # print([borrow.status for borrow in borrows])
+        for availableB in AvailableBooks:
+
+            borrows = Borrow.objects.filter(availableB=availableB)
+
             if not (borrows and borrows.latest('end').status):
-                exemplar.status = 1
-                exemplar.save()
+                availableB.status = 1
+                availableB.save()
 
             else:
-                print(borrows.latest('end'))
-                exemplar.status = 0
-                exemplar.save()
+                availableB.status = 0
+                availableB.save()
 
-                borrows.latest('end').exemplar = exemplar
+                borrows.latest('end').availableB = availableB
                 borrows.latest('end').save()
-                # print(borrows.latest('end').exemplar)
 
-        return exemplars
+        return AvailableBooks
 
 
-class BookExemplarCreateView(CreateView):
+class AvailableBookDetailView(DetailView):
     model = AvailableBook
-    fields = ['publisher', 'code']
-    success_url = reverse_lazy('home')
-    template_name = 'crud/create.html'
-
-    def form_valid(self, form):
-        form.instance.book = Books.objects.get(id=self.kwargs['book'])
-        response = super().form_valid(form)
-        return response
-
-    def get_success_url(self, **kwargs):
-        return reverse_lazy('book-exemplars-list', kwargs={"book": self.object.book.id})
-
-
-class ExemplarDetailView(DetailView):
-    model = AvailableBook
-    template_name = 'exemplar-detail.html'
+    template_name = 'AvailableBook_detail.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(kwargs)
         borrow = Borrow.objects.filter(exemplar=kwargs.get('object'))
 
-        # print(borrow)
-        # print(borrow.latest('end').status, borrow)
         if borrow and borrow.latest('end').status:
             borrower = borrow.latest('end').borrower
         else:
@@ -183,33 +242,18 @@ class ExemplarDetailView(DetailView):
         return context
 
 
-class BorrowCreateView(CreateView):
-    model = Borrow
-    fields = ['borrower']
+class AvailableBookCreateView(CreateView):
+    model = AvailableBook
+    fields = ['publisher', 'code']
     success_url = reverse_lazy('home')
-    template_name = 'crud/create.html'
+    template_name = 'form.html'
 
     def form_valid(self, form):
-        last_borrow = Borrow.objects.filter(borrower=form.instance.borrower).last()
-
-        if form.instance.borrower.debt:
-            form.add_error('borrower', 'The user has\'t paid the fine')
-
-            return self.form_invalid(form)
-
-        if last_borrow is not None and timezone.now() < last_borrow.end:
-            form.add_error('borrower', 'The user has already borrowed a book')
-
-            return self.form_invalid(form)
-
-        exemplar = AvailableBook.objects.get(id=self.kwargs['exemplar'])
-        exemplar.status = 0
-        exemplar.save()
-
-        form.instance.exemplar = exemplar
-
+        form.instance.book = Books.objects.get(id=self.kwargs['book'])
         response = super().form_valid(form)
         return response
 
-    def get_success_url(self):
-        return reverse_lazy('exemplar-detail', kwargs={'pk': self.object.exemplar.id})
+    def get_success_url(self, **kwargs):
+        return reverse_lazy('AvailableBooks_list', kwargs={"book": self.object.book.id})
+
+# AvailableBook views end

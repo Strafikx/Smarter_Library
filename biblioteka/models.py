@@ -61,6 +61,20 @@ class Borrower(models.Model):
     def __str__(self) -> str:
         return self.user
     
+    def is_available(self):
+        book = self.borrow_set.filter(status=1)
+
+        if book:
+            return book.first().availablebook
+
+        return False
+
+    def can_borrow_book(self):
+        can_borrow = not (self.debt or self.borrow_set.filter(status=1))
+        return can_borrow
+
+
+    
 
 def expiry():
     return datetime.today() + timedelta(days=14)
