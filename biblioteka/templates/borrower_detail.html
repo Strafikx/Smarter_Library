@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_link %}
+    <link rel="stylesheet" href="{% static 'borrower-detail/style.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="exemplar_info">
+        <div class="username_actions">
+            <span>User {{ object.user.username }} | </span>
+            <a href="{% url 'borrower-update' object.id %}">Edit | </a>
+            <a href="">Delete | </a>
+        </div>
+
+        <div class="title">
+            <span class="name">{{ object.user.first_name }} {{ object.user.last_name }}</span>
+        </div>
+        <h3>Debt: {{ object.debt }}</h3>
+
+        {% if exemplar != 0%}
+            <h4>{{ exemplar }}</h4>
+            <span class="fine no">
+                <a href="{% url 'end-borrow' object.id %}" class="status available">
+                    End the borrow
+                </a>
+            </span>
+        {% endif %}
+        {% if object.debt > 0 %}
+            <span class="fine yes">
+                <a href="{% url 'clear-fine' object.id %}" class="status available">
+                    Clear the fine
+                </a>
+            </span>
+        {% else %}
+            <span class="fine no">
+
+                <a href="" class="status borrowed">
+                    No fine
+                </a>
+            </span>
+        {% endif %}
+
+    </div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_link %}
+    <link rel="stylesheet" href="{% static 'book-detail/style.css' %}">
+    <style>
+        .edit {
+            background-image: url("{% static 'icons/edit.png' %}");
+        }
+        .delete {
+            background-image: url("{% static 'icons/delete.png' %}");
+        }
+        .books {
+            background-image: url("{% static 'icons/book2.png' %}");
+            filter: invert(100%);
+
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="book_info">
+        <img src="{{ object.cover.url }}" alt="">
+        <div class="content">
+            <div class="title_icons">
+                <h1>{{ object.title }}</h1>
+                <div class="icons">
+                        {{ instances }}
+
+                        <div class="books"></div>
+                    </a>
+
+                    <a href="{% url 'book-edit' object.id %}">
+                        <div class="edit"></div>
+                    </a>
+                    <a href="{% url 'book-delete' object.id %}">
+                        <div class="delete"></div>
+                    </a>
+                </div>
+            </div>
+
+            <p>{{ object.author.all|join:', ' }}</p>
+            <p>{{ object.category.all|join:', ' }}</p>
+
+
+            <p class="description">{{ object.description }}</p>
+
+        </div>
+    </div>
+{% endblock %}

@@ -18,7 +18,7 @@ from django.db.models import Q
 
 class MyLoginView(LoginView):
     redirect_authenticated_user = True
-    template = 'login.html'
+    template_name = 'login.html'
 
     def get_success_url(self):
         return reverse_lazy('home')
@@ -50,25 +50,25 @@ class BooksListView(ListView):
 
 class BookDetailView(DetailView):
     model = Books
-    template = 'book/book-detail.html'
+    template_name = 'book-detail.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(BookDetailView, self).get_context_data(**kwargs)
-        context['instances'] = len(AvailableBook.objects.filter(book=context['book'].id))
+    # def get_context_data(self, **kwargs):
+    #     context = super(BookDetailView, self).get_context_data(**kwargs)
+    #     context['instances'] = len(AvailableBook.objects.filter(book=context['book'].id))
 
-        return context
+    #     return context
 
 
 class BookCreateView(CreateView):
     model = Books
-    template = 'form.html'
+    template_name = 'form.html'
     fields = '__all__'
     success_url = reverse_lazy('home')
 
 
 class BookUpdateView(UpdateView):
     model = Books
-    template = 'form.html'
+    template_name = 'form.html'
     fields = '__all__'
 
     def get_success_url(self):
@@ -78,7 +78,7 @@ class BookUpdateView(UpdateView):
 
 class BookDeleteView(DeleteView):
     model = Books
-    template = 'delete.html'
+    template_name = 'delete.html'
     success_url = reverse_lazy('home')
 
 # Book's views end

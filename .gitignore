@@ -5,6 +5,8 @@
 __pycache__
 db.sqlite3
 media
+covers
+
 
 # Backup files # 
 *.bak 
@@ -104,6 +106,7 @@ venv/
 ENV/ 
 env.bak/ 
 venv.bak/ 
+covers/
 
 # mkdocs documentation 
 /site 

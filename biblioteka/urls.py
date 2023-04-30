@@ -38,16 +38,26 @@ urlpatterns = [
         view=login_required(views.BookDeleteView.as_view()),
         name='book-delete'
     ),
-    # path(
-    #     route='create-user',
-    #     view=login_required(views.CreateUserView.as_view()),
-    #     name='create-user'
-    # ),
-    # path(
-    #     route='user-list',
-    #     view=login_required(views.UserListView.as_view()),
-    #     name='user-list'
-    # ),
+    path(
+        route='borrower-list',
+        view=login_required(views.BorrowerListView.as_view()),
+        name='borrower-list'
+    ),
+    path(
+        route='borrower-detail/<str:pk>',
+        view=login_required(views.BorrowerDetailView.as_view()),
+        name='borrower-detail'
+    ),
+    path(
+        route='borrower-create',
+        view=login_required(views.BorrowerCreateView.as_view()),
+        name='borrower-user'
+    ),
+    path(
+        route='borrower-update/<str:pk>',
+        view=login_required(views.BorrowerUpdateView.as_view()),
+        name='borrower-update'
+    ),
     path(
         route='book-available-list/<str:book>',
         view=login_required(views.AvailableBookListView.as_view()),
