@@ -99,22 +99,23 @@ class BorrowCreateView(CreateView):
 
             return self.form_invalid(form)
 
-        if LastBorrow is not None and timezone.now() < LastBorrow.end:
+        if LastBorrow is not None and timezone.now().date() < LastBorrow.expiry_date:
             form.add_error('borrower', 'You allready borrowed a book')
 
             return self.form_invalid(form)
-
-        availableB = AvailableBook.objects.get(id=self.kwargs['avalaibleB'])
+        
+        print(f"Parameter: =======================> {self.kwargs['availableB']}")
+        availableB = AvailableBook.objects.get(id=self.kwargs['availableB'])
         availableB.status = 0
         availableB.save()
-
-        form.instance.availableB = availableB
-
+        print('asdflkasdjflaskjdflkasdfj')
+        form.instance.borrowed_book = availableB
+        print('4123412341239481302948109328401293840239')
         response = super().form_valid(form)
         return response
 
     def get_success_url(self):
-        return reverse_lazy('AvailableBook_detail', kwargs={'pk': self.object.availableB.id})
+        return reverse_lazy('available-detail', kwargs={'pk': self.object.borrowed_book.id})
     
     # Borrow views end
 
@@ -136,7 +137,7 @@ class BorrowerListView(ListView):
         )
 
         for borrow in Borrow.objects.filter(status=1):
-            borrow.calculate_fine()
+            borrow.debt()
 
         return queryset
 
@@ -168,12 +169,12 @@ class BorrowerCreateView(CreateView):
         borrower = Borrower(user=user)
         borrower.save()
 
-        send_mail(
-            'Account has been created',
-            f'Your passwords for {user.username} account: {password}',
-            'ДОБАВИТЬ ИМЕЙЛ',
-            [user.email],
-        )
+        # send_mail(
+        #     'Account has been created',
+        #     f'Your passwords for {user.username} account: {password}',
+        #     'ДОБАВИТЬ ИМЕЙЛ',
+        #     [user.email],
+        # )
 
         response = super().form_valid(form)
         return response
@@ -231,10 +232,10 @@ class AvailableBookDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        borrow = Borrow.objects.filter(exemplar=kwargs.get('object'))
+        borrow = Borrow.objects.filter(borrowed_book=kwargs.get('object'))
 
-        if borrow and borrow.latest('end').status:
-            borrower = borrow.latest('end').borrower
+        if borrow and borrow.latest('expiry_date').status:
+            borrower = borrow.latest('expiry_date').borrower
         else:
             borrower = 'none'
 

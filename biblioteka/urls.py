@@ -49,7 +49,7 @@ urlpatterns = [
         name='borrower-detail'
     ),
     path(
-        route='borrower-create',
+        route='leB',
         view=login_required(views.BorrowerCreateView.as_view()),
         name='borrower-user'
     ),
@@ -74,9 +74,9 @@ urlpatterns = [
         name='available-detail'
     ),
     path(
-        route='borrow/<str:exemplar>',
+        route='borrow/<str:availableB>',
         view=login_required(views.BorrowCreateView.as_view()),
-        name='borrow'
+        name='borrow-create'
     )
 
 ]

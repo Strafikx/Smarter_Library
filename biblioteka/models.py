@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import uuid
 
 
 from datetime import datetime, timedelta
@@ -48,7 +49,7 @@ class AvailableBook(models.Model):
         (0, 'False'),
         (1, 'True'),
     )
-
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     book = models.ForeignKey(Books, on_delete=models.CASCADE)
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
     
@@ -59,7 +60,7 @@ class Borrower(models.Model):
     debt = models.IntegerField(default=0)
 
     def __str__(self) -> str:
-        return self.user
+        return f"{self.user}"
     
     def is_available(self):
         book = self.borrow_set.filter(status=1)

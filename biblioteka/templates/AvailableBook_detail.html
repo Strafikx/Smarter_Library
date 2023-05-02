@@ -13,7 +13,7 @@
 
         <span class="status {{ object.status|yesno:"available,borrowed,lost" }}">
             {% if object.status %}
-                <a href="{% url 'borrow' object.id %}" class="status available">
+                <a href="{% url 'borrow-create' object.id %}" class="status available">
                     Available - borrow to a student
                 </a>
             {% else %}
