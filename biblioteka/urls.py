@@ -35,12 +35,12 @@ urlpatterns = [
     ),
     path(
         route='book-delete/<str:pk>',
-        view=login_required(views.BookDeleteView.as_view()),
+        view=login_required(views.BookDeleteView.as_view()), #not working
         name='book-delete'
     ),
     path(
         route='borrower-list',
-        view=login_required(views.BorrowerListView.as_view()),
+        view=login_required(views.BorrowerListView.as_view()), #not working
         name='borrower-list'
     ),
     path(

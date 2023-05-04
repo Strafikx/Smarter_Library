@@ -2,41 +2,33 @@
 {% load static %}
 
 {% block css_link %}
-    <link rel="stylesheet" href="{% static 'book-list/style.css' %}">
+    <link rel="stylesheet" href="{% static 'home/style.css' %}">
+    <link rel="stylesheet" href="{% static 'book-detail/style.css' %}">
 {% endblock %}
 
 {% block content %}
-    <form method="get">
-        {% csrf_token %}
-        <input type="text" name="search" placeholder="Search...">
-        <input type="submit">
-    </form>
+    <body>
+        
+        <div class="book-list">
+            {% for book in books %}
+                <div class="book-item">
+                    <div class="book-cover">
+                        <img src="{{ book.cover.url }}" alt="{{ book.title }}">
+                    </div>
+                    <div class="book-details">
+                        <h3 class="book-title"><a href="{% url 'book-detail' book.id %}">{{ book.title }}</a></h3>
+                        <p class="book-author">{{ book.author.all|join:", " }}</p>
+                        <p class="book-pub-date">{{ book.pub_date|date:"Y" }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">&laquo; Previous </a>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>
 
-    <a href="{% url 'book-create' %}">Add a new book</a>
-
-    <table>
-		<thead>
-			<tr>
-				<th>Title</th>
-				<th>Author</th>
-				<th>Publication Date</th>
-			</tr>
-		</thead>
-		<tbody>
-        {% for book in books %}
-			<tr>
-				<td><a href="{% url 'book-detail' book.id %}">{{ book.title }}</a></td>
-				<td>{{ book.author.all|join:", " }}</td>
-				<td>{{ book.pub_date|date:"Y" }}</td>
-			</tr>
-        {% endfor %}
-
-		</tbody>
-	</table>
-    {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}">&laquo; Previous </a>
-    {% endif %}
-    {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>
-    {% endif %}
+        {% endif %}
+    </body>
 {% endblock %}

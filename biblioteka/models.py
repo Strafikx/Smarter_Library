@@ -66,7 +66,7 @@ class Borrower(models.Model):
         book = self.borrow_set.filter(status=1)
 
         if book:
-            return book.first().availablebook
+            return book.first().borrowed_book
 
         return False
 
@@ -75,7 +75,7 @@ class Borrower(models.Model):
         return can_borrow
 
 
-    
+      
 
 def expiry():
     return datetime.today() + timedelta(days=14)
@@ -102,3 +102,4 @@ class Borrow(models.Model):
             self.borrower.debt = debt
             self.borrower.save()
         
+    

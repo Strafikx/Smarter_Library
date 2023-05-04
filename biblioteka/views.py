@@ -36,7 +36,7 @@ class BooksListView(ListView):
     model = Books
     template_name = 'home.html'
     context_object_name = 'books'
-    paginate_by = 1
+    paginate_by = 9
 
     def get_queryset(self):
         search = self.request.GET.get('search', '')
@@ -148,7 +148,7 @@ class BorrowerDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['availableB'] = self.object.has_availableB()
+        context['availableB'] = self.object.is_available()
 
         return context
 

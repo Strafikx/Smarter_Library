@@ -1,7 +1,12 @@
 <header>
-    <a href="{% url 'home' %}" class="logo">library</a>
+    <a href="{% url 'home' %}" class="logo">Smarter</a>
 
     <ul>
+        <form method="get">
+            {% csrf_token %}
+            <input type="text" name="search" placeholder="Search...">
+            <input type="submit" value="Send">
+        </form>
         
         <li><a href="{% url 'home' %}">Catalog</a></li>
         <li><a href="{% url 'book-create' %}">Add a new book</a></li>
