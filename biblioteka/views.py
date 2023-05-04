@@ -210,9 +210,9 @@ class AvailableBookListView(ListView):
 
         for availableB in AvailableBooks:
 
-            borrows = Borrow.objects.filter(availableB=availableB)
+            borrows = Borrow.objects.filter(borrowed_book=availableB)
 
-            if not (borrows and borrows.latest('end').status):
+            if not (borrows and borrows.latest('expiry_date').status):
                 availableB.status = 1
                 availableB.save()
 
@@ -220,8 +220,8 @@ class AvailableBookListView(ListView):
                 availableB.status = 0
                 availableB.save()
 
-                borrows.latest('end').availableB = availableB
-                borrows.latest('end').save()
+                borrows.latest('expiry_date').borrowed_book = availableB
+                borrows.latest('expiry_date').save()
 
         return AvailableBooks
 

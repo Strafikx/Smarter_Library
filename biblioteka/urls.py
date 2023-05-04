@@ -45,13 +45,8 @@ urlpatterns = [
     ),
     path(
         route='borrower-detail/<str:pk>',
-        view=login_required(views.BorrowerDetailView.as_view()),
+        view=login_required(views.BorrowerDetailView.as_view()), #not working
         name='borrower-detail'
-    ),
-    path(
-        route='leB',
-        view=login_required(views.BorrowerCreateView.as_view()),
-        name='borrower-user'
     ),
     path(
         route='borrower-update/<str:pk>',
