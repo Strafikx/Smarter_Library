@@ -8,6 +8,7 @@
 
 {% block content %}
     <body>
+        <a href="borrower-list">Borrowers list</a>
         
         <div class="book-list">
             {% for book in books %}
@@ -30,5 +31,7 @@
             <a href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>
 
         {% endif %}
+
+
     </body>
 {% endblock %}

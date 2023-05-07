@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 from django.contrib.auth.decorators import login_required
+from .utils import clear_fine, end_borrow
+
 
 urlpatterns = [
     path(
@@ -72,6 +74,21 @@ urlpatterns = [
         route='borrow/<str:availableB>',
         view=login_required(views.BorrowCreateView.as_view()),
         name='borrow-create'
+    ),
+    path(
+        route='borrower-create',
+        view=login_required(views.BorrowerCreateView.as_view()),
+        name='borrower-user'
+    ),
+      path(
+        route='clear-fine/<str:pk>',
+        view=login_required(clear_fine),
+        name='clear-fine'
+    ),
+    path(
+        route='end-borrow/<str:pk>',
+        view=login_required(end_borrow),
+        name='end-borrow'
     )
 
 ]

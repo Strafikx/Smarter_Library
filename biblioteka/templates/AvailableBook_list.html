@@ -22,15 +22,15 @@
         </div>
     </a>
     <div class="user_list">
-    {% for exemplar in exemplars %}
-        <a href="{% url 'book-available-detail' exemplar.id %}">
+    {% for available in AvailableBooks %}
+        <a href="{% url 'available-detail' available.id %}">
             <div class="user">
                 <div class="user_info">
                     <div class="name_status">
-                        <h3>{{ exemplar }}</h3>
+                        <h3>{{ available }}</h3>
                         <div class="status {{ exemplar.status|yesno:"available,borrowed,lost" }}"></div>
                     </div>
-                    <p>{{ exemplar.publisher }}</p>
+                    <p>{{ available.publisher }}</p>
 
                 </div>
             </div>

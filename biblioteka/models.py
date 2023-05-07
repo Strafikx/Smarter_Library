@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 import uuid
 
 
-from datetime import datetime, timedelta
+# from datetime import datetime, timedelta
+import datetime
 from django.utils import timezone
 
 
@@ -80,7 +81,7 @@ class Borrower(models.Model):
       
 
 def expiry():
-    return datetime.today() + timedelta(days=14)
+    return datetime.date.today() + datetime.timedelta(days=14)
 
 class Borrow(models.Model):
     STATUS_CHOICES = (
@@ -101,7 +102,7 @@ class Borrow(models.Model):
         return f'{self.borrower} - {self.borrowed_book}'
     
     def calculate_debt(self):
-        debt = (datetime.today - self.expiry_date).days
+        debt = (datetime.date.today() - self.expiry_date).days
         
         if self.status and debt > 0:
             self.borrower.debt = debt

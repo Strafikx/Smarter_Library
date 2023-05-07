@@ -258,6 +258,6 @@ class AvailableBookCreateView(CreateView):
         return response
 
     def get_success_url(self, **kwargs):
-        return reverse_lazy('AvailableBooks_list', kwargs={"book": self.object.book.id})
+        return reverse_lazy('book-available-list', kwargs={"book": self.object.book.id})
 
 # AvailableBook views end

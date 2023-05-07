@@ -43,6 +43,10 @@
             <a href="{% url 'book-edit'  object.id %}" class="btn btn-primary">Edit</a>
 
             <a href="{% url 'book-delete' object.id %}" class="btn btn-primary">Delete</a>
+
+            <a href="{% url 'borrow-create' object.id %}" class="btn btn-primary">Borrow book</a>
+            
+            <a href="{% url 'book-available-list' object.id %}" class="btn btn-primary">Book Available list</a>
         </div>
         </div>
     </div>
