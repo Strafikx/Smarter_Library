@@ -78,7 +78,7 @@ class BookUpdateView(UpdateView):
 
 class BookDeleteView(DeleteView):
     model = Books
-    template_name = 'delete.html'
+    template_name = 'form.html'
     success_url = reverse_lazy('home')
 
 # Book's views end
@@ -137,7 +137,7 @@ class BorrowerListView(ListView):
         )
 
         for borrow in Borrow.objects.filter(status=1):
-            borrow.debt()
+            borrow.calculate_debt()
 
         return queryset
 
@@ -240,13 +240,15 @@ class AvailableBookDetailView(DetailView):
             borrower = 'none'
 
         context['borrower'] = borrower
+        context['edit_url'] = reverse_lazy('available_book_update', kwargs={'pk': self.object.pk})
+
 
         return context
 
 
 class AvailableBookCreateView(CreateView):
     model = AvailableBook
-    fields = ['publisher', 'code']
+    fields = ['publisher']
     success_url = reverse_lazy('home')
     template_name = 'form.html'
 

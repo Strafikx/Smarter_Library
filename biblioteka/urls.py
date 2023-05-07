@@ -35,7 +35,7 @@ urlpatterns = [
     ),
     path(
         route='book-delete/<str:pk>',
-        view=login_required(views.BookDeleteView.as_view()), #not working
+        view=login_required(views.BookDeleteView.as_view()), 
         name='book-delete'
     ),
     path(
@@ -50,22 +50,22 @@ urlpatterns = [
     ),
     path(
         route='borrower-update/<str:pk>',
-        view=login_required(views.BorrowerUpdateView.as_view()),
+        view=login_required(views.BorrowerUpdateView.as_view()), #working but not right
         name='borrower-update'
     ),
     path(
         route='book-available-list/<str:book>',
-        view=login_required(views.AvailableBookListView.as_view()),
+        view=login_required(views.AvailableBookListView.as_view()), 
         name='book-available-list'
     ),
     path(
         route='book-available-create/<str:book>',
-        view=login_required(views.AvailableBookCreateView.as_view()),
+        view=login_required(views.AvailableBookCreateView.as_view()), #починил, не понял что делает, в модельке прописать надо что нужно и  во вьюшке в поле "fields" добавить. когда сохраняешь тоже траблы.
         name='book-available-create'
     ),
     path(
         route='available-detail/<str:pk>',
-        view=login_required(views.AvailableBookDetailView.as_view()),
+        view=login_required(views.AvailableBookDetailView.as_view()), #не работает biblioteka_availablebook.publisher_id does not exist
         name='available-detail'
     ),
     path(

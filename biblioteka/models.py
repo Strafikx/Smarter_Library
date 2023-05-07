@@ -4,6 +4,7 @@ import uuid
 
 
 from datetime import datetime, timedelta
+from django.utils import timezone
 
 
 # Create your models here.
@@ -52,6 +53,7 @@ class AvailableBook(models.Model):
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
     book = models.ForeignKey(Books, on_delete=models.CASCADE)
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    publisher = models.ForeignKey('Publisher', on_delete=models.CASCADE)
     
 
 
@@ -92,10 +94,13 @@ class Borrow(models.Model):
     issued_date = models.DateField(auto_now=True)
     expiry_date = models.DateField(default=expiry)
 
+
+
+
     def __str__(self) -> str:
         return f'{self.borrower} - {self.borrowed_book}'
     
-    def debt(self):
+    def calculate_debt(self):
         debt = (datetime.today - self.expiry_date).days
         
         if self.status and debt > 0:
