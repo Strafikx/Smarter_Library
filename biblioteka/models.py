@@ -1,4 +1,12 @@
 from django.db import models
+from django.contrib.auth.models import User
+import uuid
+
+
+# from datetime import datetime, timedelta
+import datetime
+from django.utils import timezone
+
 
 # Create your models here.
 
@@ -36,3 +44,68 @@ class Publisher(models.Model):
 
     def __str__(self) -> str:
         return self.name
+    
+
+class AvailableBook(models.Model):
+    STATUS_CHOICES = (
+        (0, 'False'),
+        (1, 'True'),
+    )
+    # id = models.UUIDField(primary_key=True, default=uuid.uuid4, unique=True, editable=False)
+    book = models.ForeignKey(Books, on_delete=models.CASCADE)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    publisher = models.ForeignKey('Publisher', on_delete=models.CASCADE)
+    
+
+
+class Borrower(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    debt = models.IntegerField(default=0)
+
+    def __str__(self) -> str:
+        return f"{self.user}"
+    
+    def is_available(self):
+        book = self.borrow_set.filter(status=1)
+
+        if book:
+            return book.first().borrowed_book
+
+        return False
+
+    def can_borrow_book(self):
+        can_borrow = not (self.debt or self.borrow_set.filter(status=1))
+        return can_borrow
+
+
+      
+
+def expiry():
+    return datetime.date.today() + datetime.timedelta(days=14)
+
+class Borrow(models.Model):
+    STATUS_CHOICES = (
+        (0, 'False'),
+        (1, 'True'),
+    )
+
+    borrower = models.ForeignKey(Borrower, on_delete=models.CASCADE)
+    borrowed_book = models.ForeignKey(AvailableBook, on_delete=models.CASCADE)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=1)
+    issued_date = models.DateField(auto_now=True)
+    expiry_date = models.DateField(default=expiry)
+
+
+
+
+    def __str__(self) -> str:
+        return f'{self.borrower} - {self.borrowed_book}'
+    
+    def calculate_debt(self):
+        debt = (datetime.date.today() - self.expiry_date).days
+        
+        if self.status and debt > 0:
+            self.borrower.debt = debt
+            self.borrower.save()
+        
+    

@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_link %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+{% endblock %}
+
+{% block content %}
+    <div class="exemplar_info">
+        <span class="exemplar">Available # {{ object.code }}</span>
+
+        <span class="title">{{ object.book.title }} | Author: {{ object.book.author.all|join:"," }}</span>
+
+        <span class="status {{ object.status|yesno:"available,borrowed,lost" }}">
+            {% if object.status %}
+                <a href="{% url 'borrow-create' object.id %}" class="status available">
+                    Available - borrow to a student
+                </a>
+            {% else %}
+                <a href="{% url 'borrower-detail' borrower.id %}" class="status borrowed">
+                    Borrowed by {{ borrower}}
+                </a>
+            {% endif %}
+        </span>
+
+    </div>
+{% endblock %}

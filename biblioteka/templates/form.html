@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block css_link %}
+    <link rel="stylesheet" href="{% static 'formedit/style.css' %}">
+{% endblock %}    
+
+{% block content %}
+
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Save">
+    </form>
+
+{% endblock %}

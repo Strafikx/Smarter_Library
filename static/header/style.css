@@ -1,0 +1,77 @@
+header {
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 1em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #000000;
+    border-bottom: 1px solid #ffffff;
+}
+
+header .logo {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 2em;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+header ul {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+header ul li {
+    margin: 0 1em;
+}
+
+header ul a {
+    text-decoration: none;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 1.2em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  input[type="text"] {
+    padding: 0.5em;
+    border: none;
+    border-bottom: 2px solid black;
+    font-size: 1em;
+    margin-right: 5px;
+ 
+   
+  }
+
+  input[type="submit"] {
+    background-color: black;
+    color: white;
+    padding: 0.5em 1em;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+    
+  }
+
+  input[type="submit"]:hover {
+    background-color: grey;
+  }
+
+  ::placeholder {
+    color: grey;
+  }

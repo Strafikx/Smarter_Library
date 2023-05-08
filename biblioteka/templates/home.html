@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_link %}
+    <link rel="stylesheet" href="{% static 'home/style.css' %}">
+    <link rel="stylesheet" href="{% static 'book-detail/style.css' %}">
+{% endblock %}
+
+{% block content %}
+    <body>
+        <a href="borrower-list">Borrowers list</a>
+        
+        <div class="book-list">
+            {% for book in books %}
+                <div class="book-item">
+                    <div class="book-cover">
+                        <img src="{{ book.cover.url }}" alt="{{ book.title }}">
+                    </div>
+                    <div class="book-details">
+                        <h3 class="book-title"><a href="{% url 'book-detail' book.id %}">{{ book.title }}</a></h3>
+                        <p class="book-author">{{ book.author.all|join:", " }}</p>
+                        <p class="book-pub-date">{{ book.pub_date|date:"Y" }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">&laquo; Previous </a>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>
+
+        {% endif %}
+
+
+    </body>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_link %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <style>
+        .available {
+            background-image: url("{% static 'icons/available.png' %}");
+        }
+
+        .borrowed {
+            background-image: url("{% static 'icons/borrowed.png' %}");
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <a href="{% url 'book-available-create' book %}">
+        <div class="new_user">
+            Add a new exemplar
+        </div>
+    </a>
+    <div class="user_list">
+    {% for available in AvailableBooks %}
+        <a href="{% url 'available-detail' available.id %}">
+            <div class="user">
+                <div class="user_info">
+                    <div class="name_status">
+                        <h3>{{ available }}</h3>
+                        <div class="status {{ exemplar.status|yesno:"available,borrowed,lost" }}"></div>
+                    </div>
+                    <p>{{ available.publisher }}</p>
+
+                </div>
+            </div>
+        </a>
+    {% endfor %}
+    </div>
+
+{% endblock %}

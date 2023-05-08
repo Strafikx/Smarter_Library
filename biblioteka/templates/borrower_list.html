@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_link %}
+    <link rel="stylesheet" href="{% static 'user-list/style.css' %}">
+{% endblock %}
+
+{% block content %}
+    <a href="{% url 'borrower-user' %}">
+        <div class="new_user">
+            Add a new user
+        </div>
+    </a>
+        <form method="get">
+            {% csrf_token %}
+            <input name="search" type="text" placeholder="Search for a user" class="new_user">
+        </form>
+    <div class="user_list">
+    {% for user in users %}
+        <a href="{% url 'borrower-detail' user.id %}">
+
+            <div class="user">
+                <div class="user_info">
+                    <div class="name">
+                        <h3>{{ user.user.first_name }} {{ user.user.last_name }}</h3>
+                    </div>
+
+                    <p>
+                        {{ user.user.username }}
+                    </p>
+                </div>
+
+                <div class="debt"><h2>{{ user.debt }}</h2></div>
+
+            </div>
+
+        </a>
+    {% endfor %}
+    </div>
+
+{% endblock %}

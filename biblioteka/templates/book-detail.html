@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_link %}
+    <link rel="stylesheet" href="{% static 'book-detail/style.css' %}">
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">    <style>
+        .edit {
+            background-image: url("{% static 'icons/edit.png' %}");
+        }
+        .delete {
+            background-image: url("{% static 'icons/delete.png' %}");
+        }
+        .books {
+            background-image: url("{% static 'icons/book2.png' %}");
+            filter: invert(100%);
+
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+    <div class="book_info">
+        <img src="{{ object.cover.url }}" alt="">
+        <div class="content">
+            <div class="title_icons">
+                <h1>{{ object.title }}</h1>
+                <div class="icons">
+                        {{ instances }}
+
+                        <div class="books"></div>
+                </div>
+            </div>
+
+            <p>{{ object.author.all|join:', ' }}</p>
+            <p>{{ object.category.all|join:', ' }}</p>
+
+
+            <p class="description">{{ object.description }}</p>
+        <div class="btns">
+            <a href="{% url 'book-edit'  object.id %}" class="btn btn-primary">Edit</a>
+
+            <a href="{% url 'book-delete' object.id %}" class="btn btn-primary">Delete</a>
+
+            <a href="{% url 'borrow-create' object.id %}" class="btn btn-primary">Borrow book</a>
+            
+            <a href="{% url 'book-available-list' object.id %}" class="btn btn-primary">Book Available list</a>
+        </div>
+        </div>
+    </div>
+{% endblock %}
